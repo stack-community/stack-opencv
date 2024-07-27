@@ -1,0 +1,10 @@
+[package]
+name = "stack-opencv"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rand = "0.8"
+clap = "3.0"
+regex = "1.10.4"
+opencv = "0.92.1"
