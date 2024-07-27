@@ -1,4 +1,5 @@
 use clap::{App, Arg};
+use opencv::imgproc::resize;
 use opencv::{
     core::{self, Mat},
     highgui, imgcodecs, imgproc,
@@ -1200,6 +1201,27 @@ impl Executor {
                 let img = &self.pop_stack().get_image();
                 self.stack
                     .push(Type::Image(gaussian_blur(img, ksize as i32)))
+            }
+
+            "resize-image" => {
+                fn resize_image(img: &Mat, width: i32, height: i32) -> Mat {
+                    let mut resized_img = Mat::default();
+                    resize(
+                        img,
+                        &mut resized_img,
+                        core::Size::new(width, height),
+                        0.0,
+                        0.0,
+                        0,
+                    )
+                    .unwrap();
+                    resized_img
+                }
+                let height = self.pop_stack().get_number();
+                let width = self.pop_stack().get_number();
+                let img = &self.pop_stack().get_image();
+                self.stack
+                    .push(Type::Image(resize_image(img, width as i32, height as i32)))
             }
 
             // If it is not recognized as a command, use it as a string.
