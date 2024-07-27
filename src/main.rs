@@ -186,7 +186,7 @@ impl Type {
     fn get_image(&self) -> Mat {
         match self {
             Type::Image(i) => i.clone(),
-            _ => unsafe { Mat::new_nd(&[0], 0).unwrap() },
+            _ => Mat::default(),
         }
     }
 }
@@ -1178,6 +1178,28 @@ impl Executor {
                 };
                 let img = &self.pop_stack().get_image();
                 self.stack.push(Type::Image(flip(img, direction)))
+            }
+
+            "gaussian-blur" => {
+                fn gaussian_blur(img: &Mat, ksize: i32) -> Mat {
+                    let mut blurred_img = Mat::default();
+                    let ksize = core::Size::new(ksize, ksize);
+                    imgproc::gaussian_blur(
+                        img,
+                        &mut blurred_img,
+                        ksize,
+                        0.0,
+                        0.0,
+                        core::BORDER_DEFAULT,
+                    )
+                    .unwrap();
+                    blurred_img
+                }
+
+                let ksize = self.pop_stack().get_number();
+                let img = &self.pop_stack().get_image();
+                self.stack
+                    .push(Type::Image(gaussian_blur(img, ksize as i32)))
             }
 
             // If it is not recognized as a command, use it as a string.
