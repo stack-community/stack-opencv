@@ -186,7 +186,7 @@ impl Type {
     fn get_image(&self) -> Mat {
         match self {
             Type::Image(i) => i.clone(),
-            _ => panic!("チノちゃん「うるさいですね...」"),
+            _ => unsafe { Mat::new_nd(&[0], 0).unwrap() },
         }
     }
 }
@@ -1158,6 +1158,26 @@ impl Executor {
 
                 let img = &self.pop_stack().get_image();
                 self.stack.push(Type::Image(invert_color(img)))
+            }
+
+            "flip-image" => {
+                fn flip(img: &Mat, direction: i32) -> Mat {
+                    let mut flipped_img = Mat::default();
+                    core::flip(img, &mut flipped_img, direction).unwrap();
+                    flipped_img
+                }
+
+                let direction = self.pop_stack().get_string();
+                let direction = if direction == "vertical" {
+                    0
+                } else if direction == "horizontal" {
+                    1
+                } else {
+                    self.stack.push(Type::Error("flip-image".to_string()));
+                    return;
+                };
+                let img = &self.pop_stack().get_image();
+                self.stack.push(Type::Image(flip(img, direction)))
             }
 
             // If it is not recognized as a command, use it as a string.
