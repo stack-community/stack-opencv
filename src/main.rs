@@ -1,5 +1,8 @@
 use clap::{App, Arg};
-use opencv::{core::Mat, highgui, imgcodecs, imgproc};
+use opencv::{
+    core::{self, Mat},
+    highgui, imgcodecs, imgproc,
+};
 use rand::seq::SliceRandom;
 use regex::Regex;
 use std::collections::HashMap;
@@ -1120,18 +1123,15 @@ impl Executor {
 
             "open-image" => {
                 let image_path: &str = &self.pop_stack().get_string();
-                let img: Mat = imgcodecs::imread(image_path, imgcodecs::IMREAD_COLOR)
-                    .expect("チノちゃん「うるさいですね...」");
+                let img: Mat = imgcodecs::imread(image_path, imgcodecs::IMREAD_COLOR).unwrap();
                 self.stack.push(Type::Image(img))
             }
 
             "show-image" => {
                 //Display the image
                 let window_name: &str = "Image Window";
-                highgui::named_window(window_name, highgui::WINDOW_NORMAL)
-                    .expect("チノちゃん「うるさいですね...」");
-                highgui::imshow(window_name, &self.pop_stack().get_image())
-                    .expect("チノちゃん「うるさいですね...」");
+                highgui::named_window(window_name, highgui::WINDOW_NORMAL).unwrap();
+                highgui::imshow(window_name, &self.pop_stack().get_image()).unwrap();
 
                 // Wait for a key press
                 highgui::wait_key(0).expect("チノちゃん「うるさいですね...」");
@@ -1146,6 +1146,18 @@ impl Executor {
 
                 let img = &self.pop_stack().get_image();
                 self.stack.push(Type::Image(to_grayscale(img)))
+            }
+
+            "invert-color" => {
+                fn invert_color(img: &Mat) -> Mat {
+                    let mut inverted_img = Mat::default();
+                    core::bitwise_not(img, &mut inverted_img, &core::no_array()).unwrap();
+
+                    inverted_img
+                }
+
+                let img = &self.pop_stack().get_image();
+                self.stack.push(Type::Image(invert_color(img)))
             }
 
             // If it is not recognized as a command, use it as a string.
