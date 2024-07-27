@@ -1,5 +1,5 @@
 use clap::{App, Arg};
-use opencv::{core::Mat, highgui, imgcodecs};
+use opencv::{core::Mat, highgui, imgcodecs, imgproc};
 use rand::seq::SliceRandom;
 use regex::Regex;
 use std::collections::HashMap;
@@ -1135,6 +1135,17 @@ impl Executor {
 
                 // Wait for a key press
                 highgui::wait_key(0).expect("チノちゃん「うるさいですね...」");
+            }
+
+            "to-grayscale" => {
+                fn to_grayscale(img: &Mat) -> Mat {
+                    let mut gray_img = Mat::default();
+                    imgproc::cvt_color(img, &mut gray_img, imgproc::COLOR_BGR2GRAY, 0).unwrap();
+                    gray_img
+                }
+
+                let img = &self.pop_stack().get_image();
+                self.stack.push(Type::Image(to_grayscale(img)))
             }
 
             // If it is not recognized as a command, use it as a string.
