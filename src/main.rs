@@ -1224,6 +1224,18 @@ impl Executor {
                     .push(Type::Image(resize_image(img, width as i32, height as i32)))
             }
 
+            "edge-detect" => {
+                fn edge_detection(img: &Mat) -> Mat {
+                    let mut gray_img = Mat::default();
+                    let mut edges = Mat::default();
+                    imgproc::cvt_color(img, &mut gray_img, imgproc::COLOR_BGR2GRAY, 0).unwrap();
+                    imgproc::canny(&gray_img, &mut edges, 100.0, 200.0, 3, false).unwrap();
+                    edges
+                }
+                let img = &self.pop_stack().get_image();
+                self.stack.push(Type::Image(edge_detection(img)))
+            }
+
             // If it is not recognized as a command, use it as a string.
             _ => self.stack.push(Type::String(command)),
         }
