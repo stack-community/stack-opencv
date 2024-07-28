@@ -1135,7 +1135,7 @@ impl Executor {
                 highgui::imshow(window_name, &self.pop_stack().get_image()).unwrap();
 
                 // Wait for a key press
-                highgui::wait_key(0).expect("チノちゃん「うるさいですね...」");
+                highgui::wait_key(0).unwrap();
             }
 
             "to-grayscale" => {
@@ -1234,6 +1234,16 @@ impl Executor {
                 }
                 let img = &self.pop_stack().get_image();
                 self.stack.push(Type::Image(edge_detection(img)))
+            }
+
+            "color-map" => {
+                fn apply_color_map(img: &Mat) -> Mat {
+                    let mut color_img = Mat::default();
+                    imgproc::apply_color_map(img, &mut color_img, imgproc::COLORMAP_JET).unwrap();
+                    color_img
+                }
+                let img = &self.pop_stack().get_image();
+                self.stack.push(Type::Image(apply_color_map(img)))
             }
 
             // If it is not recognized as a command, use it as a string.
