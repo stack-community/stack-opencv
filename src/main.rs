@@ -1246,6 +1246,51 @@ impl Executor {
                 self.stack.push(Type::Image(apply_color_map(img)))
             }
 
+            "morphology-operation" => {
+                fn morphology_operation(img: &Mat, operation: i32, kernel_size: i32) -> Mat {
+                    let mut result_img = Mat::default();
+                    let kernel = imgproc::get_structuring_element(
+                        imgproc::MORPH_RECT,
+                        opencv::core::Size::new(kernel_size, kernel_size),
+                        core::Point::new(-1, -1),
+                    )
+                    .unwrap();
+
+                    // モルフォロジー変換
+                    imgproc::morphology_ex(
+                        img,
+                        &mut result_img,
+                        operation,
+                        &kernel,
+                        core::Point::new(-1, -1),
+                        1,
+                        core::BORDER_CONSTANT,
+                        core::Scalar::all(0.0),
+                    )
+                    .unwrap();
+
+                    result_img
+                }
+                let kernel_size = self.pop_stack().get_number();
+                let operation = match self.pop_stack().get_string().as_str() {
+                    "dilate" => imgproc::MORPH_DILATE,
+                    "erode" => imgproc::MORPH_ERODE,
+                    "open" => imgproc::MORPH_OPEN,
+                    "clone" => imgproc::MORPH_CLOSE,
+                    _ => {
+                        self.stack
+                            .push(Type::Error("morphology-operation".to_string()));
+                        return;
+                    }
+                };
+                let img = &self.pop_stack().get_image();
+                self.stack.push(Type::Image(morphology_operation(
+                    img,
+                    operation as i32,
+                    kernel_size as i32,
+                )))
+            }
+
             // If it is not recognized as a command, use it as a string.
             _ => self.stack.push(Type::String(command)),
         }
