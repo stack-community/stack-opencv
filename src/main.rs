@@ -1291,6 +1291,17 @@ impl Executor {
                 )))
             }
 
+            "histogram-equalization" => {
+                fn histogram_equalization(img: &Mat) -> Mat {
+                    let mut equalized_img = Mat::default();
+                    imgproc::equalize_hist(img, &mut equalized_img).unwrap();
+                    equalized_img
+                }
+
+                let img = &self.pop_stack().get_image();
+                self.stack.push(Type::Image(histogram_equalization(img)))
+            }
+
             // If it is not recognized as a command, use it as a string.
             _ => self.stack.push(Type::String(command)),
         }
