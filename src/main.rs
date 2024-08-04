@@ -1302,6 +1302,12 @@ impl Executor {
                 self.stack.push(Type::Image(histogram_equalization(img)))
             }
 
+            "save-image" => {
+                let name = &self.pop_stack().get_string();
+                let img = &self.pop_stack().get_image();
+                opencv::imgcodecs::imwrite(name, &img, &core::Vector::new()).unwrap();
+            }
+
             // If it is not recognized as a command, use it as a string.
             _ => self.stack.push(Type::String(command)),
         }
