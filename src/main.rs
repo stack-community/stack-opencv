@@ -1276,7 +1276,7 @@ impl Executor {
                     "dilate" => imgproc::MORPH_DILATE,
                     "erode" => imgproc::MORPH_ERODE,
                     "open" => imgproc::MORPH_OPEN,
-                    "clone" => imgproc::MORPH_CLOSE,
+                    "close" => imgproc::MORPH_CLOSE,
                     _ => {
                         self.stack
                             .push(Type::Error("morphology-operation".to_string()));
