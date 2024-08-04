@@ -1,2 +1,5 @@
 /target
 *.jpg
+*.png
+*.stk
+.DS_Store
