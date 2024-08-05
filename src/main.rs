@@ -1308,6 +1308,27 @@ impl Executor {
                 opencv::imgcodecs::imwrite(name, &img, &core::Vector::new()).unwrap();
             }
 
+            "to-sharpe" => {
+                fn to_sharpe(img: Mat) -> Mat {
+                    let kernel =
+                        Mat::from_slice_2d(&[[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]]).unwrap();
+                    let mut sharpened_img = Mat::default();
+                    imgproc::filter_2d(
+                        &img,
+                        &mut sharpened_img,
+                        -1,
+                        &kernel,
+                        core::Point::new(-1, -1),
+                        0.0,
+                        core::BORDER_DEFAULT,
+                    )
+                    .unwrap();
+                    sharpened_img
+                }
+                let img = self.pop_stack().get_image();
+                self.stack.push(Type::Image(to_sharpe(img)))
+            }
+
             // If it is not recognized as a command, use it as a string.
             _ => self.stack.push(Type::String(command)),
         }
