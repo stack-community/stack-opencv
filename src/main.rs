@@ -1122,12 +1122,16 @@ impl Executor {
             // Sleep fixed time
             "sleep" => sleep(Duration::from_secs_f64(self.pop_stack().get_number())),
 
+            // Commands of OpenCV image processing
+
+            // open image file
             "open-image" => {
                 let image_path: &str = &self.pop_stack().get_string();
                 let img: Mat = imgcodecs::imread(image_path, imgcodecs::IMREAD_COLOR).unwrap();
                 self.stack.push(Type::Image(img))
             }
 
+            // Show image using GUI window
             "show-image" => {
                 //Display the image
                 let window_name: &str = "Image Window";
@@ -1138,6 +1142,7 @@ impl Executor {
                 highgui::wait_key(0).unwrap();
             }
 
+            // Modify image to grayscale
             "to-grayscale" => {
                 fn to_grayscale(img: &Mat) -> Mat {
                     let mut gray_img = Mat::default();
@@ -1149,6 +1154,7 @@ impl Executor {
                 self.stack.push(Type::Image(to_grayscale(img)))
             }
 
+            // Modify image to invert its color
             "invert-color" => {
                 fn invert_color(img: &Mat) -> Mat {
                     let mut inverted_img = Mat::default();
@@ -1161,6 +1167,7 @@ impl Executor {
                 self.stack.push(Type::Image(invert_color(img)))
             }
 
+            // Modify image to flip vertical or horizontal
             "flip-image" => {
                 fn flip(img: &Mat, direction: i32) -> Mat {
                     let mut flipped_img = Mat::default();
@@ -1181,6 +1188,7 @@ impl Executor {
                 self.stack.push(Type::Image(flip(img, direction)))
             }
 
+            // Modify image to blur using gaussian
             "gaussian-blur" => {
                 fn gaussian_blur(img: &Mat, ksize: i32) -> Mat {
                     let mut blurred_img = Mat::default();
@@ -1203,6 +1211,7 @@ impl Executor {
                     .push(Type::Image(gaussian_blur(img, ksize as i32)))
             }
 
+            // Modify image to resize its width and height
             "resize-image" => {
                 fn resize_image(img: &Mat, width: i32, height: i32) -> Mat {
                     let mut resized_img = Mat::default();
@@ -1224,6 +1233,7 @@ impl Executor {
                     .push(Type::Image(resize_image(img, width as i32, height as i32)))
             }
 
+            // Detect edge of image
             "edge-detect" => {
                 fn edge_detection(img: &Mat) -> Mat {
                     let mut gray_img = Mat::default();
@@ -1236,6 +1246,7 @@ impl Executor {
                 self.stack.push(Type::Image(edge_detection(img)))
             }
 
+            // Modify image to mapping its color
             "color-map" => {
                 fn apply_color_map(img: &Mat) -> Mat {
                     let mut color_img = Mat::default();
@@ -1246,6 +1257,7 @@ impl Executor {
                 self.stack.push(Type::Image(apply_color_map(img)))
             }
 
+            // Modify image to morphology operation
             "morphology-operation" => {
                 fn morphology_operation(img: &Mat, operation: i32, kernel_size: i32) -> Mat {
                     let mut result_img = Mat::default();
@@ -1256,7 +1268,6 @@ impl Executor {
                     )
                     .unwrap();
 
-                    // モルフォロジー変換
                     imgproc::morphology_ex(
                         img,
                         &mut result_img,
@@ -1291,6 +1302,7 @@ impl Executor {
                 )))
             }
 
+            // Modify image to histogram equalization
             "histogram-equalization" => {
                 fn histogram_equalization(img: &Mat) -> Mat {
                     let mut equalized_img = Mat::default();
@@ -1302,12 +1314,14 @@ impl Executor {
                 self.stack.push(Type::Image(histogram_equalization(img)))
             }
 
+            // Save image to file
             "save-image" => {
                 let name = &self.pop_stack().get_string();
                 let img = &self.pop_stack().get_image();
                 opencv::imgcodecs::imwrite(name, &img, &core::Vector::new()).unwrap();
             }
 
+            // Modify image to sharpe
             "to-sharpe" => {
                 fn to_sharpe(img: Mat, level: i32) -> Mat {
                     let kernel =
