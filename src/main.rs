@@ -1323,9 +1323,13 @@ impl Executor {
 
             // Modify image to sharpe
             "to-sharpe" => {
-                fn to_sharpe(img: Mat, level: i32) -> Mat {
-                    let kernel =
-                        Mat::from_slice_2d(&[[-1, -1, -1], [-1, level, -1], [-1, -1, -1]]).unwrap();
+                fn to_sharpe(img: Mat, level: f64) -> Mat {
+                    let kernel = Mat::from_slice_2d(&[
+                        [-1f64, -1f64, -1f64],
+                        [-1f64, level, -1f64],
+                        [-1f64, -1f64, -1f64],
+                    ])
+                    .unwrap();
                     let mut sharpened_img = Mat::default();
                     imgproc::filter_2d(
                         &img,
@@ -1341,7 +1345,7 @@ impl Executor {
                 }
                 let level = self.pop_stack().get_number();
                 let img = self.pop_stack().get_image();
-                self.stack.push(Type::Image(to_sharpe(img, level as i32)))
+                self.stack.push(Type::Image(to_sharpe(img, level)))
             }
 
             // If it is not recognized as a command, use it as a string.
