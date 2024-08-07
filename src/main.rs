@@ -1127,8 +1127,9 @@ impl Executor {
             // Open image file
             "open-image" => {
                 let image_path: &str = &self.pop_stack().get_string();
-                let img: Mat = imgcodecs::imread(image_path, imgcodecs::IMREAD_COLOR).unwrap();
-                self.stack.push(Type::Image(img))
+                self.stack.push(Type::Image(
+                    imgcodecs::imread(image_path, imgcodecs::IMREAD_COLOR).unwrap(),
+                ))
             }
 
             // Show image using GUI window
