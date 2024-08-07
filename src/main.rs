@@ -1124,7 +1124,7 @@ impl Executor {
 
             // Commands of OpenCV image processing
 
-            // open image file
+            // Open image file
             "open-image" => {
                 let image_path: &str = &self.pop_stack().get_string();
                 let img: Mat = imgcodecs::imread(image_path, imgcodecs::IMREAD_COLOR).unwrap();
